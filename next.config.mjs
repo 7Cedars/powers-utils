@@ -37,6 +37,10 @@ const nextConfig = {
         config.resolve.alias = {
             ...config.resolve.alias,
             '@react-native-async-storage/async-storage': false,
+            // Stub Solana packages (not used - EVM only)
+            '@solana-program/system': false,
+            '@solana-program/token': false,
+            '@solana/kit': false,
         };
         
         // Enable WASM support for XMTP SDK
