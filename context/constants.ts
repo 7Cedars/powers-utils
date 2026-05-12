@@ -25,6 +25,11 @@ type Constants = {
 
   // ZKPassport
   ZKPASSPORT_POWER_REGISTRY?: `0x${string}`;
+
+  // Cultural Stewardship
+  CULTURAL_STEWARDSHIP?: `0x${string}`;
+  CULTURAL_STEWARDSHIP_SIGNUP_MANDATE?: number;
+  CULTURAL_STEWARDSHIP_WEBSITE?: string;
 }
 
 export const getConstants = (chainId: number): Constants => {
@@ -50,7 +55,11 @@ export const getConstants = (chainId: number): Constants => {
       POWER_LABS_FRONTEND: `0xb4C909D4888603E941e38b706365f97949c877d1`,
       POWER_LABS_PROTOCOL: `0x5b5B9cE87Ba7fCddD3Cbe78bE19b1920645d0359`, 
 
-      ZKPASSPORT_POWER_REGISTRY: `0xYourRegistryAddressHere`
+      ZKPASSPORT_POWER_REGISTRY: `0xYourRegistryAddressHere`,
+
+      CULTURAL_STEWARDSHIP: `0x8da83ff5533e7842076f0B66Db1Dd3c5DE06C395`,
+      CULTURAL_STEWARDSHIP_SIGNUP_MANDATE: 6,
+      CULTURAL_STEWARDSHIP_WEBSITE: "www.enterhere.io"
     }
     case 421614: // arb sepolia
       return {
