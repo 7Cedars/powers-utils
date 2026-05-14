@@ -168,18 +168,14 @@ export function SignupForm({ preselectedIndex }: Props) {
           <p className="text-sm text-foreground/60">A URI pointing to your applicant profile or supporting information.</p>
         </div>
 
-         <div className="space-y-2">
+        <div className="space-y-2">
           <label className="block text-base font-bold">
-            Ethereum Address:
+            Connected Account:
           </label>
-          <div className="flex items-stretch gap-2">
-            <div className="flex-1 border-2 border-foreground bg-background px-4 py-2 text-base font-mono overflow-hidden">
-              {connectedAddress ? (
-                <span className="truncate">{connectedAddress}</span>
-              ) : (
-                <span className="text-foreground/40">Not connected</span>
-              )}
-            </div>
+          <div className="flex items-center gap-3">
+            <p className="flex-1 text-base font-mono truncate text-foreground/70">
+              {connectedAddress ?? <span className="text-foreground/40">Not connected</span>}
+            </p>
             {ready ? (
               <button
                 type="button"
@@ -243,7 +239,7 @@ export function SignupForm({ preselectedIndex }: Props) {
             {!isSignedIn
               ? "→ SIGN IN TO APPLY"
               : selectedIndex === undefined
-                ? "→ SELECT AN ORGANISATION"
+                ? "→ SUBMIT APPLICATION"
                 : isPending || isConfirming
                   ? "→ SUBMITTING…"
                   : "→ SUBMIT"}
