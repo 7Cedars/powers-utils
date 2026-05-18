@@ -165,21 +165,17 @@ export function SignupForm({ preselectedIndex }: Props) {
             rows={3}
             className="w-full border-2 border-foreground bg-background px-4 py-2 text-base"
           />
-          <p className="text-sm text-foreground/60">A URI pointing to your applicant profile or supporting information.</p>
+          <p className="text-sm text-foreground/60">A brief description, no more than two sentences, of why you would like to join this ideas Layer.</p>
         </div>
 
-         <div className="space-y-2">
+        <div className="space-y-2">
           <label className="block text-base font-bold">
-            Ethereum Address:
+            Connected Account:
           </label>
-          <div className="flex items-stretch gap-2">
-            <div className="flex-1 border-2 border-foreground bg-background px-4 py-2 text-base font-mono overflow-hidden">
-              {connectedAddress ? (
-                <span className="truncate">{connectedAddress}</span>
-              ) : (
-                <span className="text-foreground/40">Not connected</span>
-              )}
-            </div>
+          <div className="flex items-center gap-3">
+            <p className="flex-1 text-base font-mono truncate text-foreground/70">
+              {connectedAddress ?? <span className="text-foreground/40">Not connected</span>}
+            </p>
             {ready ? (
               <button
                 type="button"
@@ -235,19 +231,30 @@ export function SignupForm({ preselectedIndex }: Props) {
           <p className="text-base text-foreground text-center">
             Note: Applications will be reviewed by existing member organisations. Once accepted, you will automatically be assigned a membership role. Sign in with the same address to access your organisation&apos;s governance.
           </p>
-          <button
-            type="submit"
-            disabled={!canSubmit || isWrongChain}
-            className="bg-foreground text-background border-2 border-foreground px-6 py-3 text-sm tracking-wider hover:opacity-80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {!isSignedIn
-              ? "→ SIGN IN TO APPLY"
-              : selectedIndex === undefined
-                ? "→ SELECT AN ORGANISATION"
-                : isPending || isConfirming
-                  ? "→ SUBMITTING…"
-                  : "→ SUBMIT"}
-          </button>
+          {isConfirmed && selectedIndex !== undefined ? (
+            <a
+              href={`https://powers-protocol.vercel.app/forum/11155111/${holderAddresses[selectedIndex]}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-foreground text-background border-2 border-foreground px-6 py-3 text-sm tracking-wider hover:opacity-80 transition-colors"
+            >
+              → VISIT IDEAS LAYER
+            </a>
+          ) : (
+            <button
+              type="submit"
+              disabled={!canSubmit || isWrongChain}
+              className="bg-foreground text-background border-2 border-foreground px-6 py-3 text-sm tracking-wider hover:opacity-80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {!isSignedIn
+                ? "→ SIGN IN TO APPLY"
+                : selectedIndex === undefined
+                  ? "→ SUBMIT APPLICATION"
+                  : isPending || isConfirming
+                    ? "→ SUBMITTING…"
+                    : "→ SUBMIT"}
+            </button>
+          )}
         </div>
 
       </form>
