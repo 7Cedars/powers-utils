@@ -1,5 +1,5 @@
 import { readFile, writeFile, readdir, mkdir } from 'fs/promises';
-import { join, dirname } from 'path';
+import { join, relative, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 import { pipeline } from '@huggingface/transformers';
@@ -54,6 +54,17 @@ function makeChunks(
   return chunks;
 }
 
+async function listFilesRecursive(
+  dir: string,
+  ext: string,
+  exclude?: (name: string) => boolean,
+): Promise<string[]> {
+  const entries = await readdir(dir, { recursive: true, withFileTypes: true });
+  return entries
+    .filter((e) => e.isFile() && e.name.endsWith(ext) && !exclude?.(e.name))
+    .map((e) => join(e.parentPath, e.name));
+}
+
 async function embedBatch(texts: string[]): Promise<number[][]> {
   const ext = await getExtractor();
   // nomic-embed requires "search_document:" prefix for passage/document embedding
@@ -65,23 +76,25 @@ async function embedBatch(texts: string[]): Promise<number[][]> {
 async function ingest() {
   const rawChunks: Omit<Chunk, 'embedding'>[] = [];
 
-  // Index PDFs from sources/
+  // Index PDFs from sources/ (including subfolders)
   const sourcesDir = join(AI_ROOT, 'sources');
-  const pdfFiles = (await readdir(sourcesDir)).filter((f) => f.endsWith('.pdf'));
-  for (const file of pdfFiles) {
-    console.log(`  Parsing PDF: ${file}`);
-    const buf = await readFile(join(sourcesDir, file));
+  const pdfFiles = await listFilesRecursive(sourcesDir, '.pdf');
+  for (const filePath of pdfFiles) {
+    const relPath = relative(sourcesDir, filePath).split('\\').join('/');
+    console.log(`  Parsing PDF: ${relPath}`);
+    const buf = await readFile(filePath);
     const { text } = await pdfParse(buf);
-    rawChunks.push(...makeChunks(text, file, 'pdf'));
+    rawChunks.push(...makeChunks(text, relPath, 'pdf'));
   }
 
-  // Index markdown summaries from references/
+  // Index markdown summaries from references/ (including subfolders)
   const refsDir = join(AI_ROOT, 'references');
-  const mdFiles = (await readdir(refsDir)).filter((f) => f.endsWith('.md') && !f.includes('template'));
-  for (const file of mdFiles) {
-    console.log(`  Parsing markdown: ${file}`);
-    const text = await readFile(join(refsDir, file), 'utf-8');
-    rawChunks.push(...makeChunks(text, file, 'markdown'));
+  const mdFiles = await listFilesRecursive(refsDir, '.md', (name) => name.includes('template'));
+  for (const filePath of mdFiles) {
+    const relPath = relative(refsDir, filePath).split('\\').join('/');
+    console.log(`  Parsing markdown: ${relPath}`);
+    const text = await readFile(filePath, 'utf-8');
+    rawChunks.push(...makeChunks(text, relPath, 'markdown'));
   }
 
   console.log(`\nEmbedding ${rawChunks.length} chunks...`);
