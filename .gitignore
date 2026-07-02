@@ -36,3 +36,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# governance-rag source pdfs
+packages/governance-rag/sources/
